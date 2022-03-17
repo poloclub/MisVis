@@ -1,0 +1,519 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+#contents {
+    width: 752px;
+    height: 512px;
+    position: relative;
+}
+
+/* Header */
+
+#domain-search-bar-header {
+    width: 730px;
+    height: 40px;
+    padding: 10px;
+    border: 1px solid #e9e9e9;
+    background-color: #a0a0a0;
+}
+
+#domain-search-bar {
+    width: 350px;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    display: block;
+    margin: auto;
+}
+
+#domain-search-list {
+    width: 730px;
+    height: 200px;
+    padding: 0px 10px 0px 10px;
+    border: 1px;
+    position: absolute;
+    top: 60px;
+}
+
+#domain-search-bar-list {
+    width: 372px;
+    height: 200px;
+    list-style-type: none;
+    padding: 0;
+    margin: auto;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.domain-search-bar-entry {
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #e9e9e9;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: black;
+    display: block;
+}
+
+#header {
+    width: 730px;
+    height: 45px;
+    padding: 10px;
+    border: 1px solid #e9e9e9;
+    background-color: #e9e9e9;
+}
+
+#header div {
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-statement {
+    display: inline-block;
+    /* color: white; */
+    font-size: 30px;
+    padding-right: 8px;
+}
+
+#header-statement-domain {
+    font-weight: bold;
+}
+
+#header-statement-class {
+    color: #009E73;
+    font-weight: bold;
+    /* padding-right: 1px; */
+}
+
+/* Main */
+
+#main {
+    width: 650px;
+    height: 450px;
+    padding: 30px 50px 30px 50px;
+    display: inline-block;
+    position: relative;
+    border: 1px solid #e9e9e9;
+    /* background-color: #FAFAFA; */
+    background-color: white;
+    text-align: center;
+}
+
+#in-summary-graph {
+    width: 500px;
+    height: 450px;
+    display: inline-block;
+    margin: auto;
+    position: relative;
+}
+
+#out-summary-graph {
+    width: 500px;
+    height: 450px;
+    display: none;
+    opacity: 0;
+}
+
+#in-statement, #out-statement {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+#in-statement-first-row, #in-statement-third-row, 
+#out-statement-first-row, #out-statement-third-row {
+    font-weight: bold;
+}
+
+#in-statement-graph-view, #out-statement-graph-view {
+    font-size: 24px;
+    display: none;
+    opacity: 0;
+}
+
+#in-statement-graph-view-domain-name, #out-statement-graph-view-domain-name {
+    /* display: inline-block; */ 
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#in-graph, #out-graph {
+    width: 500px;
+    height: 330px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    position: relative;
+}
+
+#in-graph-svg, #out-graph-svg {
+    width: 500px;
+    height: 330px;
+    justify-content: center;
+    align-items: center;
+}
+
+#in-graph-percentage, #out-graph-percentage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    top: 0%;
+    color: #009E73;
+    font-size: 36px;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+#in-highlight, #out-highlight {
+    width: 500px;
+    height: 350px;
+    position: absolute;
+    top: 0%;
+    pointer-events: none;
+}
+
+#in-highlight-svg, #out-highlight-svg {
+    width: 500px;
+    height: 350px;
+}
+
+#in-highlight-svg-g, #out-highlight-svg-g {
+    transform: translate(0, 10px);
+}
+
+/* Icons */
+
+#icon {
+    width: 50px;
+    padding: 0px;
+    text-align: center;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#icon div {
+    width: 50px;
+    height: 50px;
+    padding: 0px;
+    position: relative;
+}
+
+#twitter-icon-svg, .icon-svg {
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    right: 0px;
+}
+
+#twitter-icon-button, #help-icon-button {
+    width: 48px;
+    height: 48px;
+    padding: 0px;
+    line-height: 48px;
+    text-align: center;
+    border: 0;
+    background-color: transparent;
+    position: absolute;
+    right: 0;
+    top: 0px;
+    cursor: pointer;
+}
+
+.material-icons, .material-icons-outlined {
+    font-family: 'Material Icons Outlined';
+}
+
+#twitter-icon, #search-icon {
+    font-size: 40px;
+    opacity: 20%;
+    pointer-events: none;
+    position: absolute;
+    top: 5px;
+    left: 6px;
+}
+
+/*
+#twitter-icon:hover, #help-icon:hover {
+    opacity: 40%;
+}
+
+#twitter-icon-button:hover, #help-icon-button:hover {
+    background-color: #9F9F9F;
+}
+*/
+/* Setting */
+
+.setting-group {
+    width: 650px;
+    height: 20px;
+    padding: 7px 0 7px 0;
+    line-height: 23px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+#setting {
+    width: 700px;
+    height: 160px;
+    padding: 20px 25px 25px 25px;
+    border: 1px solid #e9e9e9;
+    border-top: 0;
+    line-height: 23px;
+    vertical-align: middle;
+}
+
+.display-setting, .view-setting, .category-setting .level-setting {
+    display: inline-block;
+    position: relative;
+}
+
+.setting-title {
+    font-weight: bold;
+}
+
+.setting-option-left {
+    position: absolute;
+    left: 250px;
+}
+
+.setting-option-right {
+    position: absolute;
+    left: 480px;
+}
+
+.setting-toggle {
+    position: absolute;
+    left: 400px;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 43px;
+    height: 25px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    width: 43px;
+    height: 23px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 100;
+    border: 1px solid black;
+    border-radius: 50px;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider::before { /* circular toggle button */
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 2px;
+    bottom: 3px;
+    background-color: #444444;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider::before {
+    -webkit-transform: translateX(22px);
+    -ms-transform: translateX(22px);
+    transform: translateX(22px);
+}
+
+.category-setting-checkbox, .category-setting-text {
+    display: inline-block;
+}
+
+.setting-option-1 {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 250px;
+}
+
+.setting-option-2 {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 430px;
+}
+
+.setting-option-3 {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 610px;
+}
+
+.multiple-checkbox {
+    width: 23px;
+    height: 23px;
+    margin: 0;
+}
+
+.category-setting-text {
+    padding-left: 5px;
+}
+
+.radio-checkbox {
+    width: 23px;
+    height: 23px;
+    margin: 0;
+}
+
+.level-setting-text {
+    padding-left: 5px;
+}
+
+#direction-setting-text-statement-1, #direction-setting-text-statement-2 {
+    display: inline-block;
+    padding-left: 7px;
+}
+
+#direction-setting-text-domain {
+    display: inline-block;
+    font-weight: bold;
+    padding-left: 7px;
+}
+
+/* twitter */
+
+#twitter {
+    width: 650px;
+    height: 346px;
+    display: none;
+    position: absolute;
+    right: -630px;
+}
+
+div#twitter-window {
+    width: 650px;
+    height: 346px;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+}
+
+svg#twitter-window {
+    width: 650px;
+    height: 346px;
+}
+
+#twitter-domain, #twitter-bot {
+    display: block;
+    position: relative;
+    width: 650px;
+    height: 173px;
+}
+
+#twitter-domain-desc, #twitter-bot-desc {
+    position: absolute;
+    left: 204px;
+    top: 30px;
+}
+
+#twitter-domain-graph, #twitter-bot-graph {
+    display: inline-block;
+    position: absolute;
+    width: 610px;
+    height: 173px;
+}
+
+#twitter-domain-graph-svg, #twitter-bot-graph-svg {
+    width: 610px;
+    height: 173px;
+}
+
+#twitter-domain-graph-icon {
+    position: absolute;
+    font-size: 80px;
+    left: 80px;
+    top: 50px;
+}
+
+#twitter-bot-graph {
+    height: 105px;
+    width: 105px;
+    position: absolute;
+    left: 65px;
+    top: 28px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.material-icons-outlined.twitter-bot-graph-icon {
+    font-size: 32px;
+    margin: 1.5px;
+    color: #9F9F9F;
+}
+
+/* #twitter-bot-graph-icon {
+    position: absolute;
+    font-size: 80px;
+    left: 80px;
+    bottom: 50px;
+} */
+
+.twitter-desc-percent {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.twitter-desc-text {
+    font-size: 18px;
+}
+
+#twitter-domain-desc-text-statement {
+    display: inline-block;
+    padding-right: 7px;
+}
+
+#twitter-bot-desc-text-statement {
+    display: inline-block;
+}
+
+#twitter-domain-desc-text-website {
+    display: inline-block;
+    font-weight: bold;
+}
+
+#twitter-bot-desc-text-website {
+    display: inline-block;
+    font-weight: bold;
+    padding-right: 7px;
+}
+
+/* Graph View */
+#in-graph-view, #out-graph-view {
+    width: 500px;
+    height: 400px;
+    display: inline-block;
+}
