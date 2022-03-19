@@ -2,6 +2,7 @@ import { domainName, getLabelName, getColor } from "./data.js";
 import { MISINFORMATION_COLOR, RELIABLE_COLOR, OTHERS_COLOR } from "./data.js";
 import { makeHeader } from './header.js'
 import { makeMainWindow } from './main.js'
+import { makeTwitterWindow } from "./twitter.js";
 
 export function toggleTwitterPopup() {
     let twitterPopup = document.getElementById("twitter");

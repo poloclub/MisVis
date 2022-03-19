@@ -8,10 +8,10 @@ import { domainName, getData, getLabelName, getColor } from "./data.js";
 import { MISINFORMATION_COLOR, RELIABLE_COLOR, OTHERS_COLOR } from "./data.js";
 import { toggleTwitterPopup, toggleSearchDisplay, iconButtonHovered, iconButtonOut } from "./functions.js";
 
-let label, inL1FakeNumber, inL1RealNumber, inL1OthersNumber, inL2FakeNumber, inL2RealNumber, inL2OthersNumber, outL1FakeNumber, outL1RealNumber, outL1OthersNumber, outL2FakeNumber, outL2RealNumber, outL2OthersNumber;
+// let label, inL1FakeNumber, inL1RealNumber, inL1OthersNumber, inL2FakeNumber, inL2RealNumber, inL2OthersNumber, outL1FakeNumber, outL1RealNumber, outL1OthersNumber, outL2FakeNumber, outL2RealNumber, outL2OthersNumber;
 getData().then(
     data => {
-        makeMainWindow(domainName, data);
+        makeMainWindow(domainName, data[domainName]);
     }
 );
 
@@ -43,19 +43,19 @@ export function makeMainWindow(domainName, data) {
     inSummaryGraphDiv.appendChild(inStatementGraphViewDiv);
     inSummaryGraphDiv.appendChild(inGraphDiv);
 
-    label = getLabelName(data[domainName]["label"]);
-    inL1FakeNumber = data[domainName]["inL1FakeNumber"];
-    inL1RealNumber = data[domainName]["inL1RealNumber"];
-    inL1OthersNumber = data[domainName]["inL1OthersNumber"];
-    inL2FakeNumber = data[domainName]["inL2FakeNumber"];
-    inL2RealNumber = data[domainName]["inL2RealNumber"];
-    inL2OthersNumber = data[domainName]["inL2OthersNumber"];
-    outL1FakeNumber = data[domainName]["outL1FakeNumber"];
-    outL1RealNumber = data[domainName]["outL1RealNumber"];
-    outL1OthersNumber = data[domainName]["outL1OthersNumber"];
-    outL2FakeNumber = data[domainName]["outL2FakeNumber"];
-    outL2RealNumber = data[domainName]["outL2RealNumber"];
-    outL2OthersNumber = data[domainName]["outL2OthersNumber"];
+    label = getLabelName(data["label"]);
+    inL1FakeNumber = data["inL1FakeNumber"];
+    inL1RealNumber = data["inL1RealNumber"];
+    inL1OthersNumber = data["inL1OthersNumber"];
+    inL2FakeNumber = data["inL2FakeNumber"];
+    inL2RealNumber = data["inL2RealNumber"];
+    inL2OthersNumber = data["inL2OthersNumber"];
+    outL1FakeNumber = data["outL1FakeNumber"];
+    outL1RealNumber = data["outL1RealNumber"];
+    outL1OthersNumber = data["outL1OthersNumber"];
+    outL2FakeNumber = data["outL2FakeNumber"];
+    outL2RealNumber = data["outL2RealNumber"];
+    outL2OthersNumber = data["outL2OthersNumber"];
 
     inSummaryGraphDiv.label = label;
     inSummaryGraphDiv.inL1FakeNumber = inL1FakeNumber;
@@ -70,8 +70,8 @@ export function makeMainWindow(domainName, data) {
     inSummaryGraphDiv.normalized = true;
     inSummaryGraphDiv.indirectDisplay = true;
     inSummaryGraphDiv.summaryView = true;
-    inSummaryGraphDiv.inL1Domains = data[domainName]["L1InLinked"];
-    inSummaryGraphDiv.inL2Domains = data[domainName]["L2InLinked"];
+    inSummaryGraphDiv.inL1Domains = data["L1InLinked"];
+    inSummaryGraphDiv.inL2Domains = data["L2InLinked"];
 
     outSummaryGraphDiv.label = label;
     outSummaryGraphDiv.outL1FakeNumber = outL1FakeNumber;
@@ -86,8 +86,8 @@ export function makeMainWindow(domainName, data) {
     outSummaryGraphDiv.normalized = true;
     outSummaryGraphDiv.indirectDisplay = true;
     outSummaryGraphDiv.summaryView = true;
-    outSummaryGraphDiv.outL1Domains = data[domainName]["L1OutLinked"];
-    outSummaryGraphDiv.outL2Domains = data[domainName]["L2OutLinked"];
+    outSummaryGraphDiv.outL1Domains = data["L1OutLinked"];
+    outSummaryGraphDiv.outL2Domains = data["L2OutLinked"];
 
     let color = getColor(label);
 
@@ -206,7 +206,10 @@ export function makeMainWindow(domainName, data) {
     let inGraphPercentageDiv = document.createElement("div");
     inGraphPercentageDiv.setAttribute("id", "in-graph-percentage");
     inGraphPercentageDiv.style.color = color;
-    inGraphPercentageDiv.innerText = String(Math.round(1000*(inL1FakeNumber+inL2FakeNumber)/(inL1FakeNumber+inL1RealNumber+inL1OthersNumber+inL2FakeNumber+inL2RealNumber+inL2OthersNumber))/10) + "%";
+    if ((inL1FakeNumber+inL1RealNumber+inL1OthersNumber+inL2FakeNumber+inL2RealNumber+inL2OthersNumber) != 0) {
+        inGraphPercentageDiv.innerText = String(Math.round(1000*(inL1FakeNumber+inL2FakeNumber)/(inL1FakeNumber+inL1RealNumber+inL1OthersNumber+inL2FakeNumber+inL2RealNumber+inL2OthersNumber))/10) + "%";
+    }
+    else inGraphPercentageDiv.innerText = "0%";
     inGraph.appendChild(inGraphPercentageDiv);
 
     // Arc Hovered
