@@ -1,36 +1,61 @@
-// append components
-// let mainDiv = document.getElementById("main")
-
-
-
-
-import { domainName, getData, getLabelName, getColor } from "./data.js";
+import { domainName, study, getData, getLabelName, getColor } from "./data.js";
 import { MISINFORMATION_COLOR, RELIABLE_COLOR, OTHERS_COLOR } from "./data.js";
-import { toggleTwitterPopup, toggleSearchDisplay, iconButtonHovered, iconButtonOut } from "./functions.js";
+import { summaryViewCenterX, summaryViewCenterY } from "./data.js";
+import { summaryViewL1InnerRadius, summaryViewL1OuterRadius, summaryViewL2InnerRadius, summaryViewL2OuterRadius } from "./data.js";
+import { toggleTwitterPopup, toggleSearchDisplay, iconButtonHovered, iconButtonOut, toggleMask, mask, displayModeChanged } from "./functions.js";
 
-// let label, inL1FakeNumber, inL1RealNumber, inL1OthersNumber, inL2FakeNumber, inL2RealNumber, inL2OthersNumber, outL1FakeNumber, outL1RealNumber, outL1OthersNumber, outL2FakeNumber, outL2RealNumber, outL2OthersNumber;
 getData().then(
     data => {
+        if (!study) console.log(data[domainName]);
         makeMainWindow(domainName, data[domainName]);
     }
 );
 
 export function makeMainWindow(domainName, data) {
+    let t = d3.transition().duration(1200);
+    d3.select("#contents").transition(t).style("width", "702px");
+    d3.select("#main").transition(t).style("width", "600px");
+    d3.select("#header").transition(t).style("width", "680px");
+    d3.select("#setting").transition(t).style("width", "650px");
+    d3.select("#domain-search-bar-header").transition(t).style("width", "680px");
+    d3.select("#domain-search-list").transition(t).style("width", "680px");
+    
     let label, inL1FakeNumber, inL1RealNumber, inL1OthersNumber, inL2FakeNumber, inL2RealNumber, inL2OthersNumber, outL1FakeNumber, outL1RealNumber, outL1OthersNumber, outL2FakeNumber, outL2RealNumber, outL2OthersNumber;
 
     let mainDiv = document.getElementById("main")
     mainDiv.innerHTML = "";
 
+    let summaryViewGraphDescriptionDiv = document.createElement("div");
+    let graphViewGraphDescriptionDiv = document.createElement("div");
     let inSummaryGraphDiv = document.createElement("div");
     let outSummaryGraphDiv = document.createElement("div");
     let iconDiv = document.createElement("div");
+    summaryViewGraphDescriptionDiv.setAttribute("id", "summary-view-graph-description");
+    graphViewGraphDescriptionDiv.setAttribute("id", "graph-view-graph-description");
     inSummaryGraphDiv.setAttribute("id", "in-summary-graph");
     outSummaryGraphDiv.setAttribute("id", "out-summary-graph");
+    summaryViewGraphDescriptionDiv.innerHTML="";
+    graphViewGraphDescriptionDiv.innerHTML=
+        `<div style="width: 100%; position: absolute; top: 50%; transform: translateY(-50%); -ms-transform: translateY(-50%);">
+        <p style="margin-bottom: 17px;">
+        Dots are websites. The one you're visiting is shown in the middle.
+        </p>
+        <p>Color represents websites' reliability<span style="font-size:15px; vertical-align:top;">*</span> :</p>
+        <ul style="list-style-type: none">
+            <li>
+                <span style="color:#e08214;">Controversial (Orange)</span>, 
+                <span style="color: #542788; padding-left: 3px;">Verified (Purple)</span>, 
+                <span style="color: #808080; padding-left: 3px;">Unlabeled<span style="font-size:15px; vertical-align:top;">**</span> (Gray)</span>.
+            </li>
+        </ul>
+        <p style="margin-bottom: 0px">When website A links to website B,<br>we show an animated line going from A to B.</p>
+        `;
     iconDiv.setAttribute("id", "icon");
+    mainDiv.appendChild(summaryViewGraphDescriptionDiv);
+    mainDiv.appendChild(graphViewGraphDescriptionDiv);
     mainDiv.appendChild(inSummaryGraphDiv);
     mainDiv.appendChild(outSummaryGraphDiv);
     mainDiv.appendChild(iconDiv);
-
 
     // main part
     let inStatementDiv = document.createElement("div");
@@ -57,6 +82,7 @@ export function makeMainWindow(domainName, data) {
     outL2RealNumber = data["outL2RealNumber"];
     outL2OthersNumber = data["outL2OthersNumber"];
 
+    inSummaryGraphDiv.domainName = domainName;
     inSummaryGraphDiv.label = label;
     inSummaryGraphDiv.inL1FakeNumber = inL1FakeNumber;
     inSummaryGraphDiv.inL1RealNumber = inL1RealNumber;
@@ -92,7 +118,6 @@ export function makeMainWindow(domainName, data) {
     let color = getColor(label);
 
     // statement div
-
     let inStatementFirstRowDiv = document.createElement("div");
     let inStatementSecondRowDiv = document.createElement("div");
     let inStatementThirdRowDiv = document.createElement("div");
@@ -102,41 +127,40 @@ export function makeMainWindow(domainName, data) {
     inStatementFirstRowDiv.style.color = color;
     
     let inNumber;
-    if (label == "misinformation") {
-        inNumber = inL1FakeNumber + inL2FakeNumber;
-    }
-    else if (label == "reliable") {
-        inNumber = inL1RealNumber + inL2RealNumber;
-    }
-    else if (label == "other") {
-        inNumber = inL1OthersNumber + inL2OthersNumber;
-    }
+    if (label == "misinformation") inNumber = inL1FakeNumber + inL2FakeNumber;
+    else if (label == "reliable") inNumber = inL1RealNumber + inL2RealNumber;
+    else if (label == "other") inNumber = inL1OthersNumber + inL2OthersNumber;
 
+    let l = (label=="reliable")?"verified":"controversial";
     if (inNumber <= 1) {
-        inStatementFirstRowDiv.innerText = String(inNumber) + " " + label + " website";  
-        // inStatementSecondRowDiv.innerText = "directly or indirectly mentions";
-        inStatementSecondRowDiv.innerText = "is mentioning";
+        inStatementFirstRowDiv.innerText = String(inNumber) + " " + l + " website";  
+        inStatementSecondRowDiv.innerText = "is linking to the site you are visiting";
     }
     else if (inNumber > 1) {
-        inStatementFirstRowDiv.innerText = String(inNumber) + " " + label + " websites";  
-        // inStatementSecondRowDiv.innerText = "directly or indirectly mention";
-        inStatementSecondRowDiv.innerText = "are mentioning";
+        inStatementFirstRowDiv.innerText = String(inNumber) + " " + l + " websites";  
+        inStatementSecondRowDiv.innerText = "are linking to the site you are visiting";
     }
-
-    inStatementThirdRowDiv.innerText = domainName;
+    // inStatementThirdRowDiv.innerText = domainName;
+    // inStatementThirdRowDiv.innerText = "the site you are visiting";
+    // inStatementThirdRowDiv.domainName = domainName;
+    // inStatementThirdRowDiv.masked = false;
+    // inStatementThirdRowDiv.setAttribute("class", "masked-in-study");
 
     inStatementDiv.appendChild(inStatementFirstRowDiv);
     inStatementDiv.appendChild(inStatementSecondRowDiv);
-    inStatementDiv.appendChild(inStatementThirdRowDiv);
+    // inStatementDiv.appendChild(inStatementThirdRowDiv);
 
     let inStatementGraphViewTextDiv = document.createElement("div");
     let inStatementGraphViewDomainNameDiv = document.createElement("div");
     inStatementGraphViewTextDiv.setAttribute("id", "in-statement-graph-view-text");
     inStatementGraphViewDomainNameDiv.setAttribute("id", "in-statement-graph-view-domain-name");
-    inStatementGraphViewTextDiv.innerText = "Websites mentioning ";
+    inStatementGraphViewDomainNameDiv.setAttribute("class", "masked-in-study");
+    // inStatementGraphViewTextDiv.innerText = "Sites linking to the site you are visiting";
     inStatementGraphViewDomainNameDiv.innerText = domainName;
+    inStatementGraphViewDomainNameDiv.domainName = domainName;
+    inStatementGraphViewDomainNameDiv.masked = false;
     inStatementGraphViewDiv.appendChild(inStatementGraphViewTextDiv);
-    inStatementGraphViewDiv.appendChild(inStatementGraphViewDomainNameDiv);
+    // inStatementGraphViewDiv.appendChild(inStatementGraphViewDomainNameDiv);
 
     // graph
     let inGraph = d3.select("#in-graph");
@@ -163,15 +187,11 @@ export function makeMainWindow(domainName, data) {
         inL1RealRate = inL1RealNumber / inL1Total;
         inL1OthersRate = inL1OthersNumber / inL1Total;
     }
-    let inL1EmptyArc = d3.arc().innerRadius(100).outerRadius(125).startAngle(0).endAngle(2*Math.PI);
-    let inL1FakeArc = d3.arc().innerRadius(100).outerRadius(125).startAngle(0).endAngle(inL1FakeRate*360*Math.PI/180);
-    let inL1RealArc = d3.arc().innerRadius(100).outerRadius(125).startAngle(inL1FakeRate*360*Math.PI/180).endAngle((inL1FakeRate+inL1RealRate)*360*Math.PI/180);
-    let inL1OthersArc = d3.arc().innerRadius(100).outerRadius(125).startAngle((inL1FakeRate+inL1RealRate)*360*Math.PI/180).endAngle((inL1FakeRate+inL1RealRate+inL1OthersRate)*360*Math.PI/180);
-    // inG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "in-l1-empty-arc").attr("d", inL1EmptyArc).attr("fill", "#E9E9E9").attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "in-l1-empty-arc").attr("d", inL1EmptyArc).attr("fill", "url(#in-l1-empty-arc-gradient)").attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "in-l1-misinfo-arc").attr("d", inL1FakeArc).attr("fill", MISINFORMATION_COLOR).attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "in-l1-reliable-arc").attr("d", inL1RealArc).attr("fill", RELIABLE_COLOR).attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "in-l1-others-arc").attr("d", inL1OthersArc).attr("fill", OTHERS_COLOR).attr("transform", "translate(250, 165)");
+
+    appendSummaryViewArc(inG, "in", "l1", "empty", 0, 2*Math.PI);
+    appendSummaryViewArc(inG, "in", "l1", "misinfo", 0, inL1FakeRate*360*Math.PI/180);
+    appendSummaryViewArc(inG, "in", "l1", "reliable", inL1FakeRate*360*Math.PI/180, (inL1FakeRate+inL1RealRate)*360*Math.PI/180);
+    appendSummaryViewArc(inG, "in", "l1", "others", (inL1FakeRate+inL1RealRate)*360*Math.PI/180, (inL1FakeRate+inL1RealRate+inL1OthersRate)*360*Math.PI/180);
 
     // define gradient for empty arc
     let inL2EmptyArcGradient = inSvg.append("defs").append("radialGradient");
@@ -191,15 +211,11 @@ export function makeMainWindow(domainName, data) {
         inL2RealRate = inL2RealNumber / inL2Total;
         inL2OthersRate = inL2OthersNumber / inL2Total;
     }
-    // let inL2EmptyArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(0).endAngle(2*Math.PI);
-    let inL2EmptyArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(0).endAngle(2*Math.PI);
-    let inL2FakeArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(0).endAngle(inL2FakeRate*360*Math.PI/180);
-    let inL2RealArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(inL2FakeRate*360*Math.PI/180).endAngle((inL2FakeRate+inL2RealRate)*360*Math.PI/180);
-    let inL2OthersArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle((inL2FakeRate+inL2RealRate)*360*Math.PI/180).endAngle((inL2FakeRate+inL2RealRate+inL2OthersRate)*360*Math.PI/180);
-    inG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "in-l2-empty-arc").attr("d", inL2EmptyArc).attr("fill", "url(#in-l2-empty-arc-gradient)").attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "in-l2-misinfo-arc").attr("d", inL2FakeArc).attr("fill", MISINFORMATION_COLOR).attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "in-l2-reliable-arc").attr("d", inL2RealArc).attr("fill", RELIABLE_COLOR).attr("transform", "translate(250, 165)");
-    inG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "in-l2-others-arc").attr("d", inL2OthersArc).attr("fill", OTHERS_COLOR).attr("transform", "translate(250, 165)");
+
+    appendSummaryViewArc(inG, "in", "l2", "empty", 0, 2*Math.PI);
+    appendSummaryViewArc(inG, "in", "l2", "misinfo", 0, inL2FakeRate*360*Math.PI/180);
+    appendSummaryViewArc(inG, "in", "l2", "reliable", inL2FakeRate*360*Math.PI/180, (inL2FakeRate+inL2RealRate)*360*Math.PI/180);
+    appendSummaryViewArc(inG, "in", "l2", "others", (inL2FakeRate+inL2RealRate)*360*Math.PI/180, (inL2FakeRate+inL2RealRate+inL2OthersRate)*360*Math.PI/180);
 
     // Hyperlink percentage
     inGraph = document.getElementById("in-graph");
@@ -216,48 +232,40 @@ export function makeMainWindow(domainName, data) {
     inGraph = d3.select("#in-graph");
     let inHighlightDiv = inGraph.append("div").attr("id", "in-highlight");
     let inHighlightSvg = inHighlightDiv.append("svg").attr("id", "in-highlight-svg");
-    let inHighlightG = inHighlightSvg.append("g").attr("id", "in-highlight-svg-g");
+    let inHighlightG = inHighlightSvg.append("g").attr("id", "in-highlight-svg-g").attr("transform", "translate(200,200)");
 
     document.getElementById("in-graph-svg-g").addEventListener("mouseover", function (e) {
         let arcElementId = e.target.getAttribute("id");
         let arcElementD = e.target.getAttribute("d")
-        let arcElementFill = e.target.getAttribute("fill");
         let arcElementTransform = e.target.getAttribute("transform");
 
         let inL1Total = inSummaryGraphDiv.inL1FakeNumber*inSummaryGraphDiv.fakeDisplay + inSummaryGraphDiv.inL1RealNumber*inSummaryGraphDiv.realDisplay + inSummaryGraphDiv.inL1OthersNumber*inSummaryGraphDiv.othersDisplay;
         let inL2Total = inSummaryGraphDiv.inL2FakeNumber*inSummaryGraphDiv.fakeDisplay + inSummaryGraphDiv.inL2RealNumber*inSummaryGraphDiv.realDisplay + inSummaryGraphDiv.inL2OthersNumber*inSummaryGraphDiv.othersDisplay;
         let count = 0, percentage = 0;
-        let strokeColor = "black";
 
         if (arcElementId == "in-l1-misinfo-arc") {
             count = inSummaryGraphDiv.inL1FakeNumber
             percentage = (inL1Total!=0)?count/inL1Total:0;
-            // strokeColor = "#6A2F00";
         }
         else if (arcElementId == "in-l1-reliable-arc") {
             count = inSummaryGraphDiv.inL1RealNumber;
             percentage = (inL1Total!=0)?count/inL1Total:0;
-            // strokeColor = "#004F39";
         }
         else if (arcElementId == "in-l1-others-arc") {
             count = inSummaryGraphDiv.inL1OthersNumber;
             percentage = (inL1Total!=0)?count/inL1Total:0;
-            // strokeColor = "#3F3F3F";
         }
         else if (arcElementId == "in-l2-misinfo-arc") {
             count = inSummaryGraphDiv.inL2FakeNumber
             percentage = (inL2Total!=0)?count/inL2Total:0;
-            // strokeColor = "#D55E00";
         }
         else if (arcElementId == "in-l2-reliable-arc") {
             count = inSummaryGraphDiv.inL2RealNumber
             percentage = (inL2Total!=0)?count/inL2Total:0;
-            // strokeColor = "#009E73";
         }
         else if (arcElementId == "in-l2-others-arc") {
             count = inSummaryGraphDiv.inL2OthersNumber
             percentage = (inL2Total!=0)?count/inL2Total:0;
-            // strokeColor = "#7F7F7F";
         }
         percentage = Math.round(1000*percentage)/10;
         
@@ -268,8 +276,6 @@ export function makeMainWindow(domainName, data) {
                 .attr("fill", "white")
                 .attr("transform", arcElementTransform)
                 .attr("opacity", "0.3");
-                // .attr("stroke", strokeColor)
-                // .attr("stroke-width", "3px");
 
             let highlightingText = "Count: "+count+"<br>"+"Percentage: "+percentage+"%";
             inHighlightDiv.append("div")
@@ -314,26 +320,20 @@ export function makeMainWindow(domainName, data) {
     outStatementThirdRowDiv.style.color = color;
 
     let outNumber;
-    if (label == "misinformation") {
-        outNumber = outL1FakeNumber + outL2FakeNumber;
-    }
-    else if (label == "reliable") {
-        outNumber = outL1RealNumber + outL2RealNumber;
-    }
-    else if (label == "other") {
-        outNumber = outL1OthersNumber + outL2OthersNumber;
-    }
+    if (label == "misinformation") outNumber = outL1FakeNumber + outL2FakeNumber;
+    else if (label == "reliable") outNumber = outL1RealNumber + outL2RealNumber;
+    else if (label == "other") outNumber = outL1OthersNumber + outL2OthersNumber;
+    l = (label=="reliable")?"verified":"controversial";
 
-    if (outNumber <= 1) {
-        outStatementThirdRowDiv.innerText = String(outNumber) + " " + label + " website";  // the number should be changed
-    }
-    else if (outNumber > 1) {
-        outStatementThirdRowDiv.innerText = String(outNumber) + " " + label + " websites";  // the number should be changed
-    }
+    if (outNumber <= 1) outStatementThirdRowDiv.innerText = String(outNumber) + " " + l + " website";  // the number should be changed
+    else if (outNumber > 1) outStatementThirdRowDiv.innerText = String(outNumber) + " " + l + " websites";  // the number should be changed
     
-    outStatementFirstRowDiv.innerText = domainName;
-    // outStatementSecondRowDiv.innerText = "directly or indirectly mentions";
-    outStatementSecondRowDiv.innerText = "is mentioning";
+    // outStatementFirstRowDiv.innerText = domainName;
+    // outStatementFirstRowDiv.innerText = "The site you are visiting";
+    // outStatementFirstRowDiv.domainName = domainName;
+    // outStatementFirstRowDiv.maksed = false;
+    // outStatementFirstRowDiv.setAttribute("class", "masked-in-study")
+    // outStatementSecondRowDiv.innerText = "Sites you are visiting is linking to";
 
     outStatementDiv.appendChild(outStatementFirstRowDiv);
     outStatementDiv.appendChild(outStatementSecondRowDiv);
@@ -343,10 +343,13 @@ export function makeMainWindow(domainName, data) {
     let outStatementGraphViewDomainNameDiv = document.createElement("div");
     outStatementGraphViewTextDiv.setAttribute("id", "out-statement-graph-view-text");
     outStatementGraphViewDomainNameDiv.setAttribute("id", "out-statement-graph-view-domain-name");
-    outStatementGraphViewTextDiv.innerText = "Websites mentioned by ";
+    // outStatementGraphViewTextDiv.innerText = "Sites linked by the site you are visiting";
     outStatementGraphViewDomainNameDiv.innerText = domainName;
+    outStatementGraphViewDomainNameDiv.domainName = domainName;
+    outStatementGraphViewDomainNameDiv.maksed = false;
+    outStatementGraphViewDomainNameDiv.setAttribute("class", "masked-in-study");
     outStatementGraphViewDiv.appendChild(outStatementGraphViewTextDiv);
-    outStatementGraphViewDiv.appendChild(outStatementGraphViewDomainNameDiv);
+    // outStatementGraphViewDiv.appendChild(outStatementGraphViewDomainNameDiv);
 
     // graph
     let outGraph = d3.select("#out-graph");
@@ -371,14 +374,11 @@ export function makeMainWindow(domainName, data) {
         outL1RealRate = outL1RealNumber / outL1Total;
         outL1OthersRate = outL1OthersNumber / outL1Total;
     }
-    let outL1EmptyArc = d3.arc().innerRadius(100).outerRadius(125).startAngle(0).endAngle(2*Math.PI);
-    let outL1FakeArc = d3.arc().innerRadius(100).outerRadius(125).startAngle(0).endAngle(outL1FakeRate*360*Math.PI/180);
-    let outL1RealArc = d3.arc().innerRadius(100).outerRadius(125).startAngle(outL1FakeRate*360*Math.PI/180).endAngle((outL1FakeRate+outL1RealRate)*360*Math.PI/180);
-    let outL1OthersArc = d3.arc().innerRadius(100).outerRadius(125).startAngle((outL1FakeRate+outL1RealRate)*360*Math.PI/180).endAngle((outL1FakeRate+outL1RealRate+outL1OthersRate)*360*Math.PI/180);
-    outG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "out-l1-empty-arc").attr("d", outL1EmptyArc).attr("fill", "url(#out-l1-empty-arc-gradient)").attr("transform", "translate(250, 165)");
-    outG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "out-l1-misinfo-arc").attr("d", outL1FakeArc).attr("fill", MISINFORMATION_COLOR).attr("transform", "translate(250, 165)");
-    outG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "out-l1-reliable-arc").attr("d", outL1RealArc).attr("fill", RELIABLE_COLOR).attr("transform", "translate(250, 165)");
-    outG.append("path").attr("class", "arc").attr("class", "l1-arc").attr("id", "out-l1-others-arc").attr("d", outL1OthersArc).attr("fill", OTHERS_COLOR).attr("transform", "translate(250, 165)");
+
+    appendSummaryViewArc(outG, "out", "l1", "empty", 0, 2*Math.PI);
+    appendSummaryViewArc(outG, "out", "l1", "misinfo", 0, outL1FakeRate*360*Math.PI/180);
+    appendSummaryViewArc(outG, "out", "l1", "reliable", outL1FakeRate*360*Math.PI/180, (outL1FakeRate+outL1RealRate)*360*Math.PI/180);
+    appendSummaryViewArc(outG, "out", "l1", "others", (outL1FakeRate+outL1RealRate)*360*Math.PI/180, (outL1FakeRate+outL1RealRate+outL1OthersRate)*360*Math.PI/180);
 
     // define gradient for empty arc
     let outL2EmptyArcGradient = outSvg.append("defs").append("radialGradient");
@@ -398,14 +398,11 @@ export function makeMainWindow(domainName, data) {
         outL2RealRate = outL2RealNumber / outL2Total;
         outL2OthersRate = outL2OthersNumber / outL2Total;
     }
-    let outL2EmptyArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(0).endAngle(2*Math.PI);
-    let outL2FakeArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(0).endAngle(outL2FakeRate*360*Math.PI/180);
-    let outL2RealArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle(outL2FakeRate*360*Math.PI/180).endAngle((outL2FakeRate+outL2RealRate)*360*Math.PI/180);
-    let outL2OthersArc = d3.arc().innerRadius(134.475).outerRadius(165).startAngle((outL2FakeRate+outL2RealRate)*360*Math.PI/180).endAngle((outL2FakeRate+outL2RealRate+outL2OthersRate)*360*Math.PI/180);
-    outG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "out-l2-empty-arc").attr("d", outL2EmptyArc).attr("fill", "url(#out-l2-empty-arc-gradient)").attr("transform", "translate(250, 165)");
-    outG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "out-l2-misinfo-arc").attr("d", outL2FakeArc).attr("fill", MISINFORMATION_COLOR).attr("transform", "translate(250, 165)");
-    outG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "out-l2-reliable-arc").attr("d", outL2RealArc).attr("fill", RELIABLE_COLOR).attr("transform", "translate(250, 165)");
-    outG.append("path").attr("class", "arc").attr("class", "l2-arc").attr("id", "out-l2-others-arc").attr("d", outL2OthersArc).attr("fill", OTHERS_COLOR).attr("transform", "translate(250, 165)");
+
+    appendSummaryViewArc(outG, "out", "l2", "empty", 0, 2*Math.PI);
+    appendSummaryViewArc(outG, "out", "l2", "misinfo", 0, outL2FakeRate*360*Math.PI/180);
+    appendSummaryViewArc(outG, "out", "l2", "reliable", outL2FakeRate*360*Math.PI/180, (outL2FakeRate+outL2RealRate)*360*Math.PI/180);
+    appendSummaryViewArc(outG, "out", "l2", "others", (outL2FakeRate+outL2RealRate)*360*Math.PI/180, (outL2FakeRate+outL2RealRate+outL2OthersRate)*360*Math.PI/180);
 
     // Hyperlink percentage
     let graphPercentageDiv = document.createElement("div")
@@ -429,43 +426,35 @@ export function makeMainWindow(domainName, data) {
     document.getElementById("out-graph-svg-g").addEventListener("mouseover", function (e) {
         let arcElementId = e.target.getAttribute("id");
         let arcElementD = e.target.getAttribute("d")
-        let arcElementFill = e.target.getAttribute("fill");
         let arcElementTransform = e.target.getAttribute("transform");
 
         let outL1Total = outSummaryGraphDiv.outL1FakeNumber*outSummaryGraphDiv.fakeDisplay + outSummaryGraphDiv.outL1RealNumber*outSummaryGraphDiv.realDisplay + outSummaryGraphDiv.outL1OthersNumber*outSummaryGraphDiv.othersDisplay;
         let outL2Total = outSummaryGraphDiv.outL2FakeNumber*outSummaryGraphDiv.fakeDisplay + outSummaryGraphDiv.outL2RealNumber*outSummaryGraphDiv.realDisplay + outSummaryGraphDiv.outL2OthersNumber*outSummaryGraphDiv.othersDisplay;
         let count = 0, percentage = 0;
-        let strokeColor = "black";
 
         if (arcElementId == "out-l1-misinfo-arc") {
             count = outSummaryGraphDiv.outL1FakeNumber
             percentage = (outL1Total!=0)?count/outL1Total:0;
-            // strokeColor = "#6A2F00";
         }
         else if (arcElementId == "out-l1-reliable-arc") {
             count = outSummaryGraphDiv.outL1RealNumber;
             percentage = (outL1Total!=0)?count/outL1Total:0;
-            // strokeColor = "#004F39";
         }
         else if (arcElementId == "out-l1-others-arc") {
             count = outSummaryGraphDiv.outL1OthersNumber;
             percentage = (outL1Total!=0)?count/outL1Total:0;
-            // strokeColor = "#3F3F3F";
         }
         else if (arcElementId == "out-l2-misinfo-arc") {
             count = outSummaryGraphDiv.outL2FakeNumber
             percentage = (outL2Total!=0)?count/outL2Total:0;
-            // strokeColor = "#D55E00";
         }
         else if (arcElementId == "out-l2-reliable-arc") {
             count = outSummaryGraphDiv.outL2RealNumber
             percentage = (outL2Total!=0)?count/outL2Total:0;
-            // strokeColor = "#009E73";
         }
         else if (arcElementId == "out-l2-others-arc") {
             count = outSummaryGraphDiv.outL2OthersNumber
             percentage = (outL2Total!=0)?count/outL2Total:0;
-            // strokeColor = "#7F7F7F";
         }
         percentage = Math.round(1000*percentage)/10;
 
@@ -476,8 +465,6 @@ export function makeMainWindow(domainName, data) {
                 .attr("fill", "white")
                 .attr("transform", arcElementTransform)
                 .attr("opacity", "0.3");
-                // .attr("stroke", strokeColor)
-                // .attr("stroke-width", "3px");
 
             let highlightingText = "Count: "+count+"<br>"+"Percentage: "+percentage+"%";
             outHighlightDiv.append("div")
@@ -498,14 +485,39 @@ export function makeMainWindow(domainName, data) {
         d3.select("#out-highlight-arc").remove();
         d3.select("#out-highlight-info-popup").remove();
     })
+    
+    // comment out when default is summary view
+    displayModeChanged(false);
+
+    let reliabilityLabelSourceDiv = document.createElement("div");
+    reliabilityLabelSourceDiv.setAttribute("id", "reliability-label-source");
+    reliabilityLabelSourceDiv.innerHTML = 
+        `
+        <div style="position:relative; top:3px;">
+            <span style="font-size:14px; color:#404040; font-weight:100;">*</span> Reliability labels are based on credible sources:
+            <a href="https://www.cjr.org" target="_blank">Columbia Journalism Review</a>,
+            <a href="https://mediabiasfactcheck.com/fake-news/" target="_blank">Media Bias Fact Check</a>,
+            <a href="https://github.com/KaiDMML/FakeNewsNet" target="_blank">FakeNewsNet</a>
+        </div>
+        <div>
+            <span style="font-size:14px; color:#404040; font-weight:100;">**</span> <span style="color: #808080;">Unlabeled</span> websites are typically content aggregators like google.com
+        </div>
+        `;
+    mainDiv.appendChild(reliabilityLabelSourceDiv);
 
     // icons
     let twitterIconDiv = document.createElement("div");
     let searchIconDiv = document.createElement("div");
+    let settingIconDiv = document.createElement("div");
+    let userStudyIconDiv = document.createElement("div");
     twitterIconDiv.setAttribute("id", "twitter-icon-div");
     searchIconDiv.setAttribute("id", "search-icon-div");
+    settingIconDiv.setAttribute("id", "setting-icon-div");
+    userStudyIconDiv.setAttribute("id", "user-study-icon-div");
     iconDiv.appendChild(twitterIconDiv);
-    iconDiv.appendChild(searchIconDiv);
+    if (!study) iconDiv.appendChild(searchIconDiv);
+    iconDiv.appendChild(settingIconDiv);
+    if (!study) iconDiv.appendChild(userStudyIconDiv);
 
     d3.select("#twitter-icon-div")
         .append("svg")
@@ -540,7 +552,62 @@ export function makeMainWindow(domainName, data) {
             .attr("fill", "white")
             .attr("id", "search-icon-path")
             .style("pointer-events", "none");
+            
+    d3.select("#setting-icon-div")
+        .append("svg")
+            .attr("id", "setting-icon-svg")
+            .attr("class", "icon-svg")
+            .style("cursor", "pointer")
+            .on("mouseover", iconButtonHovered)
+            .on("mouseout", iconButtonOut)
+            .on("click", function () {
+                let t = d3.transition().duration(1000);
+                if (d3.select("#setting").style("opacity") == "0") {
+                    d3.select("#setting").style("pointer-events", "auto").transition(t).style("opacity", "1");
+                    d3.select("#main").transition(t)
+                    .styleTween("border-radius", function (t) {
+                        return d3.interpolateString("0 0 20px 20px", "0 0 0px 0px");
+                    });
+                }
+                else if (d3.select("#setting").style("opacity") == "1") {
+                    d3.select("#setting").style("pointer-events", "none").transition(t).style("opacity", "0");
+                    d3.select("#main").transition(t)
+                    .styleTween("border-radius", function (t) {
+                        return d3.interpolateString("0 0 0px 0px", "0 0 20px 20px");
+                    });
+                }
+            })
+        .append("g")
+            .attr("id", "setting-icon-g")
+            .style("pointer-events", "none")
+        .append("path")
+            .attr("d", "M 48 0 V 48 H 5 a 5,5 0 0,1 -5,-5 V 5 a 5,5 0 0,1 5,-5 z")
+            .attr("fill", "white")
+            .attr("id", "setting-icon-path")
+            .style("pointer-events", "none");
+            
+    d3.select("#user-study-icon-div")
+        .append("svg")
+            .attr("id", "user-study-icon-svg")
+            .attr("class", "icon-svg")
+            .style("cursor", "pointer")
+            .on("mouseover", iconButtonHovered)
+            .on("mouseout", iconButtonOut)
+            .on("click", () => {
+                d3.selectAll(".masked-in-study")
+                    .html((_,i,dom) => toggleMask(dom[i]))
+            })
+        .append("g")
+            .attr("id", "user-study-icon-g")
+            .style("pointer-events", "none")
+        .append("path")
+            .attr("d", "M 48 0 V 48 H 5 a 5,5 0 0,1 -5,-5 V 5 a 5,5 0 0,1 5,-5 z")
+            .attr("fill", "white")
+            .attr("id", "user-study-icon-path")
+            .style("pointer-events", "none");
 
+    if (study) d3.selectAll(".masked-in-study").html((_,i,dom) => mask(dom[i]));
+            
     let twitterIconSpan = document.createElement("span");
     twitterIconSpan.setAttribute("class", "material-icons");
     twitterIconSpan.setAttribute("id", "twitter-icon");
@@ -550,8 +617,39 @@ export function makeMainWindow(domainName, data) {
     let searchIconSpan = document.createElement("span");
     searchIconSpan.setAttribute("class", "material-icons");
     searchIconSpan.setAttribute("id", "search-icon");
-    searchIconSpan.innerText = "search";
-searchIconDiv.appendChild(searchIconSpan);
+    searchIconSpan.innerHTML = "search";
+    if (!study) searchIconDiv.appendChild(searchIconSpan);
+
+    let settingIconSpan = document.createElement("span");
+    settingIconSpan.setAttribute("class", "material-icons-outlined");
+    settingIconSpan.setAttribute("id", "setting-icon");
+    settingIconSpan.innerHTML = "settings";
+    settingIconDiv.appendChild(settingIconSpan);
+
+    let userStudyIconSpan = document.createElement("span");
+    userStudyIconSpan.setAttribute("class", "material-icons-outlined");
+    userStudyIconSpan.setAttribute("id", "user-study-icon");
+    userStudyIconSpan.innerHTML = "poll";
+    if (!study) userStudyIconDiv.appendChild(userStudyIconSpan);
+}
 
 
+
+function appendSummaryViewArc(g, direction, level, label, startAngle, endAngle) {
+    let color, r1, r2;
+    if (label == "empty") color = "url(#in-l1-empty-arc-gradient)";
+    else if (label == "misinfo") color = MISINFORMATION_COLOR;
+    else if (label == "reliable") color = RELIABLE_COLOR;
+    else if (label == "others") color = OTHERS_COLOR;
+
+    if (level == "l1") r1 = summaryViewL1InnerRadius, r2=summaryViewL1OuterRadius;
+    else if (level == "l2") r1 = summaryViewL2InnerRadius, r2=summaryViewL2OuterRadius;
+
+    let arc = d3.arc().innerRadius(r1).outerRadius(r2).startAngle(startAngle).endAngle(endAngle);
+    g.append("path")
+        .attr("class", `summary-view-arc ${level}-arc`)
+        .attr("id", `${direction}-${level}-${label}-arc`)
+        .attr("d", arc)
+        .attr("fill", color)
+        .attr("transform", `translate(${summaryViewCenterX},${summaryViewCenterY})`);
 }

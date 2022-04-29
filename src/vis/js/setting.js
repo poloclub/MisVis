@@ -1,4 +1,5 @@
-import { domainName } from "./data.js";
+import { domainName, study } from "./data.js";
+import { mask } from "./functions.js"
 
 let settingDiv = document.getElementById("setting");
 
@@ -24,9 +25,11 @@ let displaySettingSummaryDiv = document.createElement("div");
 let displaySettingToggleDiv = document.createElement("div");
 let displaySettingGraphDiv = document.createElement("div");
 displaySettingTitleDiv.setAttribute("class", "display-setting setting-title");
-displaySettingSummaryDiv.setAttribute("class", "display-setting setting-option-left");
+// displaySettingSummaryDiv.setAttribute("class", "display-setting setting-option-left");
+displaySettingSummaryDiv.setAttribute("class", "display-setting setting-option-right");
 displaySettingToggleDiv.setAttribute("class", "display-setting setting-toggle");
-displaySettingGraphDiv.setAttribute("class", "display-setting setting-option-right");
+// displaySettingGraphDiv.setAttribute("class", "display-setting setting-option-right");
+displaySettingGraphDiv.setAttribute("class", "display-setting setting-option-left");
 displaySettingTitleDiv.innerText = "Display Mode";
 displaySettingSummaryDiv.innerText = "Summary View";
 displaySettingGraphDiv.innerText = "Graph View";
@@ -92,108 +95,78 @@ categorySettingDiv.appendChild(categorySettingMisinfoDiv);
 categorySettingDiv.appendChild(categorySettingReliableDiv);
 categorySettingDiv.appendChild(categorySettingOthersDiv);
 
-let categorySettingMisinfoCheckboxDiv = document.createElement("div");
-let categorySettingMisinfoTextDiv = document.createElement("div");
-categorySettingMisinfoCheckboxDiv.setAttribute("class", "multiple-checkbox");
-categorySettingMisinfoTextDiv.setAttribute("class", "category-setting-text");
-categorySettingMisinfoTextDiv.innerText = "Misinformation";
-categorySettingMisinfoDiv.appendChild(categorySettingMisinfoCheckboxDiv);
-categorySettingMisinfoDiv.appendChild(categorySettingMisinfoTextDiv);
-
 let categorySettingMisinfoCheckboxInput = document.createElement("input");
+let categorySettingMisinfoTextDiv = document.createElement("div");
 categorySettingMisinfoCheckboxInput.setAttribute("type", "checkbox");
-categorySettingMisinfoCheckboxInput.setAttribute("class", "multiple-checkbox");
+categorySettingMisinfoCheckboxInput.setAttribute("class", "category-multiple-checkbox");
 categorySettingMisinfoCheckboxInput.setAttribute("id", "category-setting-misinfo-checkbox");
 categorySettingMisinfoCheckboxInput.setAttribute("checked", "true");
 categorySettingMisinfoCheckboxInput.targetCategory = "misinformation";
-categorySettingMisinfoCheckboxDiv.appendChild(categorySettingMisinfoCheckboxInput);
-
-let categorySettingReliableCheckboxDiv = document.createElement("div");
-let categorySettingReliableTextDiv = document.createElement("div");
-categorySettingReliableCheckboxDiv.setAttribute("class", "multiple-checkbox");
-categorySettingReliableTextDiv.setAttribute("class", "category-setting-text");
-categorySettingReliableTextDiv.innerText = "Reliable";
-categorySettingReliableDiv.appendChild(categorySettingReliableCheckboxDiv);
-categorySettingReliableDiv.appendChild(categorySettingReliableTextDiv);
+categorySettingMisinfoTextDiv.setAttribute("class", "category-setting-text");
+categorySettingMisinfoTextDiv.setAttribute("id", "category-setting-text-misinfo");
+categorySettingMisinfoTextDiv.innerText = "Controversial";
+categorySettingMisinfoDiv.appendChild(categorySettingMisinfoCheckboxInput);
+categorySettingMisinfoDiv.appendChild(categorySettingMisinfoTextDiv);
 
 let categorySettingReliableCheckboxInput = document.createElement("input");
+let categorySettingReliableTextDiv = document.createElement("div");
 categorySettingReliableCheckboxInput.setAttribute("type", "checkbox");
-categorySettingReliableCheckboxInput.setAttribute("class", "multiple-checkbox");
+categorySettingReliableCheckboxInput.setAttribute("class", "category-multiple-checkbox");
 categorySettingReliableCheckboxInput.setAttribute("id", "category-setting-reliable-checkbox");
 categorySettingReliableCheckboxInput.setAttribute("checked", "true");
 categorySettingReliableCheckboxInput.targetCategory = "reliable";
-categorySettingReliableCheckboxDiv.appendChild(categorySettingReliableCheckboxInput);
-
-let categorySettingOthersCheckboxDiv = document.createElement("div");
-let categorySettingOthersTextDiv = document.createElement("div");
-categorySettingOthersCheckboxDiv.setAttribute("class", "multiple-checkbox");
-categorySettingOthersTextDiv.setAttribute("class", "category-setting-text");
-categorySettingOthersTextDiv.innerText = "Unlabeled";
-categorySettingOthersDiv.appendChild(categorySettingOthersCheckboxDiv);
-categorySettingOthersDiv.appendChild(categorySettingOthersTextDiv);
+categorySettingReliableTextDiv.setAttribute("class", "category-setting-text");
+categorySettingReliableTextDiv.setAttribute("id", "category-setting-text-reliable");
+categorySettingReliableTextDiv.innerText = "Verified";
+categorySettingReliableDiv.appendChild(categorySettingReliableCheckboxInput);
+categorySettingReliableDiv.appendChild(categorySettingReliableTextDiv);
 
 let categorySettingOthersCheckboxInput = document.createElement("input");
+let categorySettingOthersTextDiv = document.createElement("div");
 categorySettingOthersCheckboxInput.setAttribute("type", "checkbox");
-categorySettingOthersCheckboxInput.setAttribute("class", "multiple-checkbox");
+categorySettingOthersCheckboxInput.setAttribute("class", "category-multiple-checkbox");
 categorySettingOthersCheckboxInput.setAttribute("id", "category-setting-others-checkbox");
 categorySettingOthersCheckboxInput.setAttribute("checked", "true");
 categorySettingOthersCheckboxInput.targetCategory = "others";
-categorySettingOthersCheckboxDiv.appendChild(categorySettingOthersCheckboxInput);
+categorySettingOthersTextDiv.setAttribute("class", "category-setting-text");
+categorySettingOthersTextDiv.setAttribute("id", "category-setting-text-others");
+categorySettingOthersTextDiv.innerText = "Unlabeled";
+categorySettingOthersDiv.appendChild(categorySettingOthersCheckboxInput);
+categorySettingOthersDiv.appendChild(categorySettingOthersTextDiv);
 
-// Link level to Display
-let levelSettingTitleDiv = document.createElement("div");
-let levelSettingDirectDiv = document.createElement("div");
-let levelSettingIndirectDiv = document.createElement("div");
-levelSettingTitleDiv.setAttribute("class", "level-setting setting-title");
-levelSettingTitleDiv.innerText = "Link Level to Display";
-levelSettingDirectDiv.setAttribute("class", "level-setting setting-option-1");
-levelSettingIndirectDiv.setAttribute("class", "level-setting setting-option-2");
-levelSettingDiv.appendChild(levelSettingTitleDiv);
-levelSettingDiv.appendChild(levelSettingDirectDiv);
-levelSettingDiv.appendChild(levelSettingIndirectDiv);
 
-let levelSettingDirectCheckboxDiv = document.createElement("div");
-let levelSettingDirectTextDiv = document.createElement("div");
-levelSettingDirectCheckboxDiv.setAttribute("class", "multiple-checkbox");
-levelSettingDirectTextDiv.setAttribute("class", "level-setting-text");
-levelSettingDirectTextDiv.innerText = "Only direct links";
-levelSettingDirectDiv.appendChild(levelSettingDirectCheckboxDiv);
-levelSettingDirectDiv.appendChild(levelSettingDirectTextDiv);
+// Link Level to Display - fixed
+let levelSettingCheckboxInput = document.createElement("input");
+let levelSettingTextDiv = document.createElement("div");
+levelSettingCheckboxInput.setAttribute("type", "checkbox");
+levelSettingCheckboxInput.setAttribute("class", "multiple-checkbox");
+levelSettingCheckboxInput.setAttribute("id", "level-setting-checkbox");
+levelSettingTextDiv.setAttribute("id", "level-setting-text");
+levelSettingCheckboxInput.checked = true;
+levelSettingDiv.appendChild(levelSettingCheckboxInput);
+levelSettingDiv.appendChild(levelSettingTextDiv);
 
-let levelSettingDirectCheckboxInput= document.createElement("input");
-levelSettingDirectCheckboxInput.setAttribute("type", "radio");
-levelSettingDirectCheckboxInput.setAttribute("class", "radio-checkbox");
-levelSettingDirectCheckboxInput.setAttribute("id", "level-setting-direct-checkbox");
-levelSettingDirectCheckboxDiv.appendChild(levelSettingDirectCheckboxInput);
-
-let levelSettingIndirectCheckboxDiv = document.createElement("div");
-let levelSettingIndirectTextDiv = document.createElement("div");
-levelSettingIndirectCheckboxDiv.setAttribute("class", "radio-checkbox");
-levelSettingIndirectTextDiv.setAttribute("class", "level-setting-text");
-levelSettingIndirectTextDiv.innerText = "Both direct and indirect links";
-levelSettingIndirectDiv.appendChild(levelSettingIndirectCheckboxDiv);
-levelSettingIndirectDiv.appendChild(levelSettingIndirectTextDiv);
-
-let levelSettingIndirectCheckboxInput= document.createElement("input");
-levelSettingIndirectCheckboxInput.setAttribute("type", "radio");
-levelSettingIndirectCheckboxInput.setAttribute("class", "radio-checkbox");
-levelSettingIndirectCheckboxInput.setAttribute("id", "level-setting-indirect-checkbox");
-levelSettingIndirectCheckboxInput.setAttribute("checked", "true");
-levelSettingIndirectCheckboxDiv.appendChild(levelSettingIndirectCheckboxInput);
+let levelSettingTextStatement = document.createElement("div");
+let levelSettingTextDomain = document.createElement("div");
+levelSettingTextStatement.innerText = "Show outer ring"
+levelSettingTextStatement.setAttribute("id", "level-setting-text-statement");
+levelSettingTextDomain.innerText = domainName;
+levelSettingTextDomain.domainName = domainName;
+levelSettingTextDomain.masked = false;
+levelSettingTextDomain.setAttribute("id", "level-setting-text-domain");
+levelSettingTextDomain.setAttribute("class", "masked-in-study");
+levelSettingTextDiv.appendChild(levelSettingTextStatement);
+// levelSettingTextDiv.appendChild(levelSettingTextDomain);
 
 // Pointing direction
-let directionSettingCheckboxDiv = document.createElement("div");
-let directionSettingTextDiv = document.createElement("div");
-directionSettingCheckboxDiv.setAttribute("class", "multiple-checkbox");
-directionSettingTextDiv.setAttribute("id", "direction-setting-text");
-directionSettingDiv.appendChild(directionSettingCheckboxDiv);
-directionSettingDiv.appendChild(directionSettingTextDiv);
-
 let directionSettingCheckboxInput = document.createElement("input");
+let directionSettingTextDiv = document.createElement("div");
 directionSettingCheckboxInput.setAttribute("type", "checkbox");
 directionSettingCheckboxInput.setAttribute("class", "multiple-checkbox");
 directionSettingCheckboxInput.setAttribute("id", "direction-setting-checkbox");
-directionSettingCheckboxDiv.appendChild(directionSettingCheckboxInput);
+directionSettingTextDiv.setAttribute("id", "direction-setting-text");
+directionSettingDiv.appendChild(directionSettingCheckboxInput);
+directionSettingDiv.appendChild(directionSettingTextDiv);
 
 let directionSettingTextStatement1 = document.createElement("div");
 let directionSettingTextDomain = document.createElement("div");
@@ -201,9 +174,14 @@ let directionSettingTextStatement2 = document.createElement("div");
 directionSettingTextStatement1.innerText = "Show the websites that";
 directionSettingTextStatement1.setAttribute("id", "direction-setting-text-statement-1");
 directionSettingTextDomain.innerText = domainName;
+directionSettingTextDomain.domainName = domainName;
+directionSettingTextDomain.maksed = false;
 directionSettingTextDomain.setAttribute("id", "direction-setting-text-domain");
-directionSettingTextStatement2.innerText = "is mentioning";
+directionSettingTextDomain.setAttribute("class", "masked-in-study");
+directionSettingTextStatement2.innerText = "is linking to";
 directionSettingTextStatement2.setAttribute("id", "direction-setting-text-statement-2");
 directionSettingTextDiv.appendChild(directionSettingTextStatement1);
 directionSettingTextDiv.appendChild(directionSettingTextDomain);
 directionSettingTextDiv.appendChild(directionSettingTextStatement2);
+
+if (study) d3.selectAll(".masked-in-study").html((_,i,dom) => mask(dom[i]));

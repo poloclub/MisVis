@@ -1,32 +1,149 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
-  <head>
-    <title>MisVis</title>
-    <link rel="stylesheet" href="./css/style.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Arima+Madurai:wght@200;300&family=Itim&family=Merriweather:wght@300;700;900&family=News+Cycle:wght@700&family=Sarabun:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script type="module" src="./js/functions.js"></script>
-  </head>
-
-  <body>
-    <div id="domain-search-bar-header"></div>
-    <div id="header"></div>
-    <div id="contents">
-      <div id="main"></div>
-      <div id="twitter"></div>
+    <title>MisVis</title>
+    <style>
+        html { height: 100%; width: 100%; }
+        body { height: 100%; width: 100%; margin: 0; }
+        .misvis-window {
+            position: relative;
+            width: 1650px;
+            height: 1140px;
+            transform-origin: top left;
+            transform: scale(0.7);
+            top: 0;
+            left: 0;
+            margin-right: -420px;
+        }
+        .misvis-window-container { position: relative; width: 1155px; height: 798px; margin: 0; }
+        #help-window {
+            position: absolute;
+            width: 1248px;
+            height: 562px;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0; 
+            transform-origin: top left;
+        }
+        .control {
+            position: fixed;
+            width: 100%;
+            background-color: #b8c69a;
+            box-shadow: 0px -3px 20px #909090;
+            left: 0;
+            bottom: 0;
+            padding: 10px 0px;
+            box-sizing: content-box;
+            font-family: "roboto", sans-serif;
+            color: #202020;
+            text-align: justify;
+        }
+        #control-title-long {
+            vertical-align: middle;
+            font-family: "Arima Madurai", cursive;
+            font-weight: 200;
+            color: #404040;
+            position: relative;
+            top: 7px;
+        }
+        @media screen and (min-width: 800px) {
+            #control-title-long { display: inline-block; }
+        }
+        @media screen and (max-width: 799px) {
+            #control-title-long { display: none; }
+        }
+        #control-title {
+            display: inline-block;
+            vertical-align: middle;
+            font-family: "Sarabun", sans-serif;
+            font-weight: 700;
+            font-size: 30px;
+            color: #ffffff;
+            position: relative;
+            margin: 10px 10px 10px 20px;
+        }
+        .buttons {
+            display: inline-block;
+            position: absolute;
+            right: 0;
+            top: 17px;
+            vertical-align: middle;
+            margin-right: 20px;
+        }
+        .control-button {
+            width: 30px;
+            height: 30px;
+            margin: 7px;
+            line-height: 30px;
+            font-size: 18px;
+            font-family: "Roboto", sans-serif;
+            text-align: center;
+            vertical-align: middle;
+            display: inline-block;
+            color: white;
+            background-color: #909090;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="misvis-window-container">
+        <iframe src="./misvis/index.html" frameborder="0" class="misvis-window" id="misvis-window"></iframe>
     </div>
-    <div id="setting"></div>
-    <div id="domain-search-list"></div>
-    <script type="module" src="./js/data.js"></script>
-    <script type="module" src="./js/header.js"></script>
-    <script type="module" src="./js/setting.js"></script>
-    <script type="module" src="./js/main.js"></script>
-    <script type="module" src="./js/twitter.js"></script>
-    <script type="module" src="./js/buttons.js"></script>
-  </body>
+    <div class="control">
+        <div id="control-title">MisVis</div>
+        <div id="control-title-long">Explaining Website Reliability by Visualizing Hyperlink Connectivity</div>
+        <div class="buttons">
+            <div class="control-button" id="control-button-1">1</div>
+            <div class="control-button" id="control-button-2">2</div>
+            <div class="control-button" id="control-button-3">3</div>
+        </div>
+    </div>
+    <!-- <div id="help-window"></div> -->
+</body>
+<script>
+    let domains = ["thegatewaypundit.com", "zerohedge.com", "nytimes.com"];
+    let domain = domains[0];
+    let clickedButtonNumber = 1;
+    let buttonColor = "#909090";
+    let buttonHoverColor = "#505050";
+    buttonClicked({"target": {"id": "control-button-1"}});
+    document.body.style["background-size"] = "cover";
+
+    function buttonClicked (e) {
+        let clicked = e.target;
+        let clickedId = clicked.id;
+        let clickedIndex = clickedId.split("-");
+        d3.select(`#control-button-${clickedButtonNumber}`).style("background-color", buttonColor);
+        clickedButtonNumber = Number(clickedIndex[clickedIndex.length-1])
+        let domain = domains[clickedButtonNumber-1];
+        document.body.style["background"] = `url('./img/${domain.split(".")[0]}_blur.jpg') no-repeat center top fixed`;
+    document.body.style["background-size"] = "cover";
+        sessionStorage.setItem("domain", domain);
+        document.getElementById('misvis-window').src = document.getElementById('misvis-window').src
+        d3.select(`#${clicked.id}`).style("background-color", buttonHoverColor);
+    }
+
+
+    d3.selectAll(".control-button")
+        .on("mouseover", e => d3.select(e.currentTarget).style("background-color", buttonHoverColor))
+        .on("mouseout", e => {
+            let eId = e.currentTarget.id.split("-");
+            eId = Number(eId[eId.length-1]);
+            console.log(clickedButtonNumber, eId);
+            if (clickedButtonNumber != eId) d3.select(e.currentTarget).style("background-color", buttonColor)
+        })
+        .on("click", e => buttonClicked(e));
+</script>
 </html>

@@ -1,4 +1,4 @@
-import {toggleTwitterPopup, toggleHelpDisplay, twitterIconButtonHovered, twitterIconButtonOut, displayModeChanged, summaryViewModeChanged, categorySettingChanged, levelSettingDirectCheckboxFunction, levelSettingIndirectCheckboxFunction, directionCheckboxFunction} from './functions.js';
+import { displayModeChanged, summaryViewModeChanged, categorySettingChanged, levelCheckboxFunction, directionCheckboxFunction } from './functions.js';
 
 let displayModeSettingToggleInput = document.getElementById("display-mode-setting-toggle");
 displayModeSettingToggleInput.addEventListener("change", displayModeChanged);
@@ -13,10 +13,8 @@ categorySettingMisinfoCheckboxDiv.addEventListener("change", (event) => {categor
 categorySettingReliableCheckboxDiv.addEventListener("change", categorySettingChanged);
 categorySettingOthersCheckboxDiv.addEventListener("change", categorySettingChanged);
 
-let levelSettingDirectCheckboxInput = document.getElementById("level-setting-direct-checkbox");
-let levelSettingIndirectCheckboxInput = document.getElementById("level-setting-indirect-checkbox");
-levelSettingDirectCheckboxInput.addEventListener("click", levelSettingDirectCheckboxFunction)
-levelSettingIndirectCheckboxInput.addEventListener("click", levelSettingIndirectCheckboxFunction)
+let levelSettingCheckboxInput = document.getElementById("level-setting-checkbox");
+levelSettingCheckboxInput.addEventListener("change", levelCheckboxFunction)
 
 let directionSettingCheckboxInput = document.getElementById("direction-setting-checkbox");
 directionSettingCheckboxInput.addEventListener("change", directionCheckboxFunction);

@@ -1,14 +1,19 @@
-import { getData, domainName } from "./data.js"
+import { getData, domainName, study } from "./data.js"
+import { MISINFORMATION_COLOR, RELIABLE_COLOR, OTHERS_COLOR } from "./data.js";
+import { mask } from "./functions.js";
 
 
 
 getData().then(
     data => {
         makeTwitterWindow(domainName, data[domainName]);
+        if (study) d3.selectAll(".masked-in-study").html((_,i,dom) => mask(dom[i]));
     }
 );
 
+
 export function makeTwitterWindow(domainName, data) {
+    /* Twitter graph 1 - websites shared by common users */
     let twitterDiv = document.getElementById("twitter");
     twitterDiv.innerHTML = "";
 
@@ -21,13 +26,10 @@ export function makeTwitterWindow(domainName, data) {
     let twitterWindowSvg = twitterWindowDiv.append("svg").attr("id", "twitter-window");
     let twitterWindowG = twitterWindowSvg.append("g");
     twitterWindowG.append("path")
-    //.attr("d", "M 30 0 h 570 v 346 H 30 V 39 L 30 39 C 7 24, 7 24, 30 9 L 30 9 v -9")
     .attr("d", "M 30 0 h 570 v 346 H 30 V 39 L 30 39 L 13 24 L 30 9 v -9")
-    // .attr("fill", "#FAFAFA")
     .attr("fill", "white")
     .attr("stroke", "#444444");
 
-    /* Twitter graph 1 - websites shared by common users */
     let twitterDomainDiv = document.createElement("div");
     twitterDomainDiv.setAttribute("id", "twitter-domain");
     twitterDiv.appendChild(twitterDomainDiv);
@@ -62,9 +64,9 @@ export function makeTwitterWindow(domainName, data) {
     let realArc = d3.arc().innerRadius(46.5).outerRadius(62).startAngle(fakeDomainRate*2*Math.PI).endAngle((fakeDomainRate+realDomainRate)*2*Math.PI);
     let othersArc = d3.arc().innerRadius(46.5).outerRadius(62).startAngle((fakeDomainRate+realDomainRate)*2*Math.PI).endAngle((fakeDomainRate+realDomainRate+otherDomainRate)*2*Math.PI);
     twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-empty-arc").attr("d", emptyArc).attr("fill", "#E9E9E9").attr("transform", "translate(120,90)");
-    twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-fake-arc").attr("d", fakeArc).attr("fill", "#D55E00").attr("transform", "translate(120,90)");
-    twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-real-arc").attr("d", realArc).attr("fill", "#009E73").attr("transform", "translate(120,90)");
-    twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-others-arc").attr("d", othersArc).attr("fill", "#D9D9D9").attr("transform", "translate(120,90)");
+    twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-fake-arc").attr("d", fakeArc).attr("fill", MISINFORMATION_COLOR).attr("transform", "translate(120,90)");
+    twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-real-arc").attr("d", realArc).attr("fill", RELIABLE_COLOR).attr("transform", "translate(120,90)");
+    twitterDomainGraphG.append("path").attr("id", "twitter-domain-graph-others-arc").attr("d", othersArc).attr("fill", OTHERS_COLOR).attr("transform", "translate(120,90)");
 
     // statement
     let twitterDomainDescPercentDiv = document.createElement("div");
@@ -73,37 +75,38 @@ export function makeTwitterWindow(domainName, data) {
     let percent = Math.round(1000*fakeDomainRate)/10;
     twitterDomainDescPercentDiv.innerHTML = String(percent)+"%";
     twitterDomainDescTextDiv.setAttribute("id", "twitter-domain-desc-text");
-    if (percent >= 50) {
-        twitterDomainDescPercentDiv.setAttribute("style", "color: #D55E00");
-    } else {
-        twitterDomainDescPercentDiv.setAttribute("style", "color: #009E73");
-    }
+    if (percent >= 50) twitterDomainDescPercentDiv.setAttribute("style", "color: "+MISINFORMATION_COLOR);
+    else twitterDomainDescPercentDiv.setAttribute("style", "color: "+RELIABLE_COLOR);
+
     twitterDomainDescDiv.appendChild(twitterDomainDescPercentDiv);
     twitterDomainDescDiv.appendChild(twitterDomainDescTextDiv);
 
     let twitterDomainDescTextLine1 = document.createElement("div");
     let twitterDomainDescTextLine2 = document.createElement("div");
     let twitterDomainDescTextLine3 = document.createElement("div");
-    let twitterDomainDescTextLine2Statement = document.createElement("div");
-    let twitterDomainDescTextLine2SWebsite = document.createElement("div");
+    let twitterDomainDescTextLine3Website = document.createElement("div");
+    let twitterDomainDescTextLine3Statement = document.createElement("div");
 
     twitterDomainDescTextLine1.setAttribute("class", "twitter-desc-text");
     twitterDomainDescTextLine2.setAttribute("class", "twitter-desc-text");
     twitterDomainDescTextLine3.setAttribute("class", "twitter-desc-text");
-    twitterDomainDescTextLine2Statement.setAttribute("id", "twitter-domain-desc-text-statement");
-    twitterDomainDescTextLine2SWebsite.setAttribute("id", "twitter-domain-desc-text-website");
+    twitterDomainDescTextLine3Website.setAttribute("id", "twitter-domain-desc-text-website");
+    twitterDomainDescTextLine3Website.setAttribute("class", "masked-in-study");
+    twitterDomainDescTextLine3Statement.setAttribute("id", "twitter-domain-desc-text-statement");
 
     let website = domainName;
     twitterDomainDescTextLine1.innerText = "of the other websites shared by the";
-    twitterDomainDescTextLine2Statement.innerText = "Twitter users mentioning";
-    twitterDomainDescTextLine2SWebsite.innerText = website;
-    twitterDomainDescTextLine3.innerText = "contain misinformation";
+    twitterDomainDescTextLine2.innerText = "Twitter users mentioning";
+    twitterDomainDescTextLine3Website.innerText = website;
+    twitterDomainDescTextLine3Website.domainName = website;
+    twitterDomainDescTextLine3Website.masked = false;
+    twitterDomainDescTextLine3Statement.innerText = "are controversial";
 
     twitterDomainDescTextDiv.appendChild(twitterDomainDescTextLine1);
     twitterDomainDescTextDiv.appendChild(twitterDomainDescTextLine2);
     twitterDomainDescTextDiv.appendChild(twitterDomainDescTextLine3);
-    twitterDomainDescTextLine2.appendChild(twitterDomainDescTextLine2Statement);
-    twitterDomainDescTextLine2.appendChild(twitterDomainDescTextLine2SWebsite);
+    twitterDomainDescTextLine3.appendChild(twitterDomainDescTextLine3Website);
+    twitterDomainDescTextLine3.appendChild(twitterDomainDescTextLine3Statement);
 
     /* Twitter graph 2 - bot ratio */
     let twitterBotDiv = document.createElement("div");
@@ -117,23 +120,15 @@ export function makeTwitterWindow(domainName, data) {
     twitterBotDiv.appendChild(twitterBotGraphDiv);
     twitterBotDiv.appendChild(twitterBotDescDiv);
 
-    // let twitterBotGraphIcon = document.createElement("span");
-    // twitterBotGraphIcon.setAttribute("class", "material-icons-outlined");
-    // twitterBotGraphIcon.setAttribute("id", "twitter-bot-graph-icon");
-    // twitterBotGraphIcon.innerHTML = "smart_toy";
-    // twitterBotGraphDiv.appendChild(twitterBotGraphIcon);
-
-    // twitterBotGraphDiv = d3.select("#twitter-bot-graph");
-    // let twitterBotGraphSvg = twitterBotGraphDiv.append("svg").attr("id", "twitter-bot-graph-svg");
-    // let twitterBotGraphG = twitterBotGraphSvg.append("g").attr("id", "twitter-bot-graph-g");
-
     let botNumber = data["twitter_bot_user_cnt"];
-    let botRatio = botNumber/data["twitter_user_cnt"]
-    // emptyArc = d3.arc().innerRadius(46.5).outerRadius(62).startAngle(0).endAngle(2*Math.PI);
-    // let botArc = d3.arc().innerRadius(46.5).outerRadius(62).startAngle(0).endAngle(botRatio*2*Math.PI);
-    // twitterBotGraphG.append("path").attr("id", "twitter-bot-graph-nonbot-arc").attr("d", emptyArc).attr("fill", "#D9D9D9").attr("transform", "translate(120,83)");
-    // twitterBotGraphG.append("path").attr("id", "twitter-bot-graph-bot-arc").attr("d", botArc).attr("fill", "#D55E00").attr("transform", "translate(120,83)");
 
+    let twitterBotIconSpan = document.createElement("span");
+    twitterBotIconSpan.setAttribute("class", "material-icons-outlined twitter-bot-graph-icon");
+    twitterBotIconSpan.setAttribute("id", "twitter-bot-graph-icon");
+    twitterBotIconSpan.innerHTML = "smart_toy";
+    twitterBotGraphDiv.appendChild(twitterBotIconSpan);
+
+    /*
     for (let i=0;i<3;i++) {
         let twitterBotGraphLine = document.createElement("div");
         twitterBotGraphLine.setAttribute("class", "twitter-bot-graph-line");
@@ -149,8 +144,9 @@ export function makeTwitterWindow(domainName, data) {
 
     for (let i=0 ; i<botNumber ; i++) {
         let botIcon = document.getElementById("twitter-bot-graph-icon-"+String(i+1));
-        botIcon.style.color = "#D55E00";
+        botIcon.style.color = MISINFORMATION_COLOR;
     }
+    */
 
 
     let twitterBotDescTextLine0 = document.createElement("div");
@@ -160,14 +156,10 @@ export function makeTwitterWindow(domainName, data) {
 
     let twitterBotDescPercentDiv = document.createElement("div");
     let twitterBotDescTextDiv = document.createElement("div");
-    // let botPercent = Math.round(botRatio*1000)/10;
     twitterBotDescPercentDiv.innerText = String(botNumber);
     twitterBotDescPercentDiv.setAttribute("class", "twitter-desc-percent");
-    if (botNumber >= 1) {
-        twitterBotDescPercentDiv.setAttribute("style", "color: #D55E00");
-    } else {
-        twitterBotDescPercentDiv.setAttribute("style", "color: #009E73");
-    }
+    if (botNumber >= 1) twitterBotDescPercentDiv.setAttribute("style", "color: "+MISINFORMATION_COLOR);
+    else twitterBotDescPercentDiv.setAttribute("style", "color: "+RELIABLE_COLOR);
     twitterBotDescDiv.appendChild(twitterBotDescPercentDiv);
     twitterBotDescDiv.appendChild(twitterBotDescTextDiv);
 
@@ -177,13 +169,17 @@ export function makeTwitterWindow(domainName, data) {
     let twitterBotDescTextLine2Statement = document.createElement("div");
     twitterBotDescTextLine1.innerText = "of the Twitter users mentioning";
     twitterBotDescTextLine2Website.innerText = website;
+    twitterBotDescTextLine2Website.domainName = website;
+    twitterBotDescTextLine2Website.masked = false;
     twitterBotDescTextLine2Statement.innerText = "are bots";
     twitterBotDescTextLine1.setAttribute("class", "twitter-desc-text");
     twitterBotDescTextLine2.setAttribute("class", "twitter-desc-text");
     twitterBotDescTextLine2Website.setAttribute("id", "twitter-bot-desc-text-website");
+    twitterBotDescTextLine2Website.setAttribute("class", "masked-in-study");
     twitterBotDescTextLine2Statement.setAttribute("id", "twitter-bot-desc-text-statement");
     twitterBotDescTextDiv.appendChild(twitterBotDescTextLine1);
     twitterBotDescTextDiv.appendChild(twitterBotDescTextLine2);
     twitterBotDescTextLine2.appendChild(twitterBotDescTextLine2Website);
     twitterBotDescTextLine2.appendChild(twitterBotDescTextLine2Statement);
+
 }
