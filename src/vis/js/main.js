@@ -140,27 +140,19 @@ export function makeMainWindow(domainName, data) {
         inStatementFirstRowDiv.innerText = String(inNumber) + " " + l + " websites";  
         inStatementSecondRowDiv.innerText = "are linking to the site you are visiting";
     }
-    // inStatementThirdRowDiv.innerText = domainName;
-    // inStatementThirdRowDiv.innerText = "the site you are visiting";
-    // inStatementThirdRowDiv.domainName = domainName;
-    // inStatementThirdRowDiv.masked = false;
-    // inStatementThirdRowDiv.setAttribute("class", "masked-in-study");
 
     inStatementDiv.appendChild(inStatementFirstRowDiv);
     inStatementDiv.appendChild(inStatementSecondRowDiv);
-    // inStatementDiv.appendChild(inStatementThirdRowDiv);
 
     let inStatementGraphViewTextDiv = document.createElement("div");
     let inStatementGraphViewDomainNameDiv = document.createElement("div");
     inStatementGraphViewTextDiv.setAttribute("id", "in-statement-graph-view-text");
     inStatementGraphViewDomainNameDiv.setAttribute("id", "in-statement-graph-view-domain-name");
     inStatementGraphViewDomainNameDiv.setAttribute("class", "masked-in-study");
-    // inStatementGraphViewTextDiv.innerText = "Sites linking to the site you are visiting";
     inStatementGraphViewDomainNameDiv.innerText = domainName;
     inStatementGraphViewDomainNameDiv.domainName = domainName;
     inStatementGraphViewDomainNameDiv.masked = false;
     inStatementGraphViewDiv.appendChild(inStatementGraphViewTextDiv);
-    // inStatementGraphViewDiv.appendChild(inStatementGraphViewDomainNameDiv);
 
     // graph
     let inGraph = d3.select("#in-graph");
@@ -178,7 +170,6 @@ export function makeMainWindow(domainName, data) {
             .attr("stop-color", "white");
 
 
-    // Normalized, in-link
     // L1 hyperlinks
     let inL1FakeRate = 0, inL1RealRate = 0, inL1OthersRate = 0;
     let inL1Total = inL1FakeNumber + inL1RealNumber + inL1OthersNumber;
@@ -193,7 +184,6 @@ export function makeMainWindow(domainName, data) {
     appendSummaryViewArc(inG, "in", "l1", "reliable", inL1FakeRate*360*Math.PI/180, (inL1FakeRate+inL1RealRate)*360*Math.PI/180);
     appendSummaryViewArc(inG, "in", "l1", "others", (inL1FakeRate+inL1RealRate)*360*Math.PI/180, (inL1FakeRate+inL1RealRate+inL1OthersRate)*360*Math.PI/180);
 
-    // define gradient for empty arc
     let inL2EmptyArcGradient = inSvg.append("defs").append("radialGradient");
     inL2EmptyArcGradient.attr("id", "in-l2-empty-arc-gradient");
     inL2EmptyArcGradient.append("stop")
@@ -325,16 +315,9 @@ export function makeMainWindow(domainName, data) {
     else if (label == "other") outNumber = outL1OthersNumber + outL2OthersNumber;
     l = (label=="reliable")?"verified":"controversial";
 
-    if (outNumber <= 1) outStatementThirdRowDiv.innerText = String(outNumber) + " " + l + " website";  // the number should be changed
-    else if (outNumber > 1) outStatementThirdRowDiv.innerText = String(outNumber) + " " + l + " websites";  // the number should be changed
+    if (outNumber <= 1) outStatementThirdRowDiv.innerText = String(outNumber) + " " + l + " website";  
+    else if (outNumber > 1) outStatementThirdRowDiv.innerText = String(outNumber) + " " + l + " websites";  
     
-    // outStatementFirstRowDiv.innerText = domainName;
-    // outStatementFirstRowDiv.innerText = "The site you are visiting";
-    // outStatementFirstRowDiv.domainName = domainName;
-    // outStatementFirstRowDiv.maksed = false;
-    // outStatementFirstRowDiv.setAttribute("class", "masked-in-study")
-    // outStatementSecondRowDiv.innerText = "Sites you are visiting is linking to";
-
     outStatementDiv.appendChild(outStatementFirstRowDiv);
     outStatementDiv.appendChild(outStatementSecondRowDiv);
     outStatementDiv.appendChild(outStatementThirdRowDiv);
@@ -343,13 +326,11 @@ export function makeMainWindow(domainName, data) {
     let outStatementGraphViewDomainNameDiv = document.createElement("div");
     outStatementGraphViewTextDiv.setAttribute("id", "out-statement-graph-view-text");
     outStatementGraphViewDomainNameDiv.setAttribute("id", "out-statement-graph-view-domain-name");
-    // outStatementGraphViewTextDiv.innerText = "Sites linked by the site you are visiting";
     outStatementGraphViewDomainNameDiv.innerText = domainName;
     outStatementGraphViewDomainNameDiv.domainName = domainName;
     outStatementGraphViewDomainNameDiv.maksed = false;
     outStatementGraphViewDomainNameDiv.setAttribute("class", "masked-in-study");
     outStatementGraphViewDiv.appendChild(outStatementGraphViewTextDiv);
-    // outStatementGraphViewDiv.appendChild(outStatementGraphViewDomainNameDiv);
 
     // graph
     let outGraph = d3.select("#out-graph");
@@ -486,7 +467,6 @@ export function makeMainWindow(domainName, data) {
         d3.select("#out-highlight-info-popup").remove();
     })
     
-    // comment out when default is summary view
     displayModeChanged(false);
 
     let reliabilityLabelSourceDiv = document.createElement("div");

@@ -13,11 +13,9 @@ getData().then(
 
 
 export function makeTwitterWindow(domainName, data) {
-    /* Twitter graph 1 - websites shared by common users */
     let twitterDiv = document.getElementById("twitter");
     twitterDiv.innerHTML = "";
 
-    /* Twitter popup window */
     let twitterWindowDiv = document.createElement("div");
     twitterWindowDiv.setAttribute("id", "twitter-window");
     twitterDiv.appendChild(twitterWindowDiv);

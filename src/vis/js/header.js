@@ -77,7 +77,6 @@ export function makeHeader(domainName, label, color) {
     headerStatementDiv.appendChild(headerStatementDomainDiv);
     headerStatementDiv.appendChild(headerStatementTextDiv);
     headerStatementDiv.appendChild(headerStatementClassDiv);
-    // headerStatementDiv.appendChild(headerStatementExclamationDiv);
     if (domainName.length > 27) d3.selectAll(".header-statement").style("font-size", "20px");
     
     if (study) d3.selectAll(".masked-in-study").html((_, i, dom) => mask(dom[i]));

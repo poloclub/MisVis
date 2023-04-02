@@ -13,9 +13,6 @@ let defaultAnimationInterval = null;
 
 export function toggleTwitterPopup() {
     let twitterPopup = document.getElementById("twitter");
-    // let displayTwitterPopup = twitterPopup.style.display;
-    // if (displayTwitterPopup == 'inline-block') twitterPopup.style.display = "none";
-    // else twitterPopup.style.display = "inline-block"; 
     if (d3.select("#twitter").style("opacity") == "0") d3.select("#twitter").transition().duration(500).style("opacity", "1");
     else {
         d3.select("#twitter").transition().duration(500).style("opacity", "0");
@@ -210,12 +207,10 @@ function showSummaryView() {
     d3.select("#out-l1-empty-arc")
         .transition()
             .delay(1000)
-            // .duration(100)
             .attr("transform", `translate(${summaryViewCenterX}, ${summaryViewCenterY})`);
     d3.select("#out-l2-empty-arc")
         .transition()
             .delay(1000)
-            // .duration(100)
             .attr("transform", `translate(${summaryViewCenterX}, ${summaryViewCenterY})`);
     d3.select("#out-graph")
         .style("position", "absolute")
@@ -235,7 +230,6 @@ function showSummaryView() {
     d3.select("#out-graph-svg")    
         .transition()
             .delay(1000)
-            // .duration(100)
             .style("width", "500px")
             .style("height", "330px");
     d3.select("#out-statement")
@@ -310,7 +304,7 @@ async function showGraphView(domainName, animation=true) {
         defaultAnimationInterval = null;
     }
 
-    // 0. Basic variables
+    // Basic variables
     let inStatementGraphViewDiv = d3.select("#in-statement-graph-view");
     let outStatementGraphViewDiv = d3.select("#out-statement-graph-view");
     inStatementGraphViewDiv.transition()
@@ -347,16 +341,14 @@ async function showGraphView(domainName, animation=true) {
             .style("height", "430px")
             .style("pointer-events", "none");
     
-    // 1. Erase the existing summary view graphs
+    // Erase the existing summary view graphs
     d3.select("#in-statement")
         .transition()
-        // .duration(500)
         .duration(animation?500:0)
         .ease(d3.easeLinear)
         .style("display", "none");
     d3.select("#out-statement")
         .transition()
-        // .duration(500)
         .duration(animation?500:0)
         .ease(d3.easeLinear)
         .style("display", "none");
@@ -399,19 +391,17 @@ async function showGraphView(domainName, animation=true) {
     d3.select("#in-l2-empty-arc")
         .attr("transform", `translate(${graphViewCenterX},${graphViewCenterY})`)
         .transition()
-        // .duration(500)
         .duration(animation?500:0)
         .ease(d3.easeLinear)
         .attr("d", L2EmptyArc);
     d3.select("#out-l2-empty-arc")
         .attr("transform", `translate(${graphViewCenterX},${graphViewCenterY})`)
         .transition()
-        // .duration(500)
         .duration(animation?500:0)
         .ease(d3.easeLinear)
         .attr("d", L2EmptyArc);
 
-    // 3. Set nodes and edges to display 
+    // Set nodes and edges to display 
     let inTargetNode = {
         name: domainName,
         direction: "in",
@@ -595,7 +585,7 @@ function animateCentralNode(direction, transitionTime) {
                 return node.label=="misinformation"?MISINFORMATION_COLOR:(node.label=="reliable"?RELIABLE_COLOR:OTHERS_COLOR)
             })
             .attr("pointer-events", "none")
-            .style("opacity", d=>{return 1;}) //TODO
+            .style("opacity", d=>{return 1;}) 
 
     d3.select(`#${direction}-default-highlight-g`)
         .append("circle")
@@ -624,7 +614,6 @@ function setNodes(direction, level) {
         d.radius = (level=="l1")?l1CircleRadius:l2CircleRadius;
         d.index = index;
         d.label = d[1]["label"];
-        // display is about category selection
         d.display = (d.label=="misinformation"&&inSummaryGraphDiv.fakeDisplay)||(d.label=="reliable"&&inSummaryGraphDiv.realDisplay)||(d.label=="others"&&inSummaryGraphDiv.othersDisplay);
         d.L1In = d[1]["L1In"];
         d.L1Out = d[1]["L1Out"];
@@ -662,7 +651,6 @@ function setEdges(L1Nodes, L2Nodes) {
         })
     });
     
-    // TODO: Iterate for every edge in the three edge lists and add controlAngle, controlAlpha, and overlap to the link object if overlapped
     for (let i = 0 ; i < L1Edges.length; i++) {
         for (let j = i ; j < L1Edges.length ; j++){
             if (L1Edges[i].source.name == L1Edges[j].target.name && L1Edges[i].target.name == L1Edges[j].source.name) {
@@ -683,7 +671,6 @@ function setEdges(L1Nodes, L2Nodes) {
     }
     for (let i = 0 ; i < CrossEdges.length ; i++){
         for (let j = i ; j < CrossEdges.length; j++){
-            // console.log(CrossEdges[i], CrossEdges[j]);
             if (CrossEdges[i].source.name == CrossEdges[j].target.name && CrossEdges[i].target.name == CrossEdges[j].source.name) {
                 CrossEdges[i].overlap = CrossEdges[j].overlap = true;
                 CrossEdges[i].controlAngle = -Math.PI/3;
@@ -938,32 +925,22 @@ export function levelSettingDirectCheckboxFunction() {
         .transition()
             .duration(700)
             .style("opacity", "0")
-        // .transition()
-        //     .style("display", "none");
     d3.selectAll(".in-l2-bubble")
         .transition()
             .duration(700)
             .style("opacity", "0")
-        // .transition()
-        //     .style("display", "none");
     d3.selectAll(".in-l2-link")
         .transition()
             .duration(700)
             .style("opacity", "0")
-        // .transition()
-        //     .style("display", "none");
     d3.selectAll(".out-l2-bubble")
         .transition()
             .duration(700)
             .style("opacity", "0")
-        // .transition()
-        //     .style("display", "none");
     d3.selectAll(".out-l2-link")
         .transition()
             .duration(700)
             .style("opacity", "0")
-        // .transition()
-        //     .style("display", "none");
     
     let inSummaryGraphDiv = document.getElementById("in-summary-graph");
     let outSummaryGraphDiv = document.getElementById("out-summary-graph");
@@ -1449,7 +1426,6 @@ function getCurve (d) {
     }
     else {
         if (d.overlap) {
-            // use control angle
             let controlAlpha = d.controlAlpha;
             let dx = d.target.x - d.source.x, dy = d.target.y - d.source.y;
             let theta = Math.atan2(dx, -dy), l = Math.sqrt(dx*dx+dy*dy);
@@ -1651,13 +1627,8 @@ function bubbleMouseOut(e) {
                 .attr("stop-opacity", d => d.opacity)
                 .attr("class", "")
         d3.selectAll(".highlighted-link").remove();
-        // d3.selectAll("animate").remove();
         d3.select("#highlight-gradient-svg").remove();
         d3.selectAll(".highlighted-bubble").remove();
-        // d3.selectAll(".bubble-misinformation").style("fill", MISINFORMATION_COLOR);
-        // d3.selectAll(".bubble-reliable").style("fill", RELIABLE_COLOR);
-        // d3.selectAll(".bubble-others").style("fill", OTHERS_COLOR);
-        // d3.selectAll(".link").style("opacity", (d,i,x) => x[i].style["opacity"]=="0"?"0":"1");
         d3.selectAll(`.bubble-misinformation`).style("fill", "#F6DAB9")
         d3.selectAll(`.bubble-reliable`).style("fill", "#CCBEDB")
         d3.selectAll(`.bubble-others`).style("fill", "#EFEFEF")
@@ -1713,7 +1684,6 @@ export function searchBarEntryClicked() {
 
     d3.selectAll(".domain-search-bar-entry").style("display", "block");
 
-    // settings
     let displayModeSettingToggle = document.getElementById("display-mode-setting-toggle");
     let summaryViewModeSettingToggle = document.getElementById("summary-view-mode-setting-toggle");
     displayModeSettingToggle.checked = summaryViewModeSettingToggle.checked = false;
